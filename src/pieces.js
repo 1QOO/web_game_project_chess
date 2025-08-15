@@ -18,12 +18,18 @@ class whitePawn extends piece {
     constructor(row, col, color, image){
         super(row, col, color, image);
         this.position = `${boardCols[this.col]}${boardRows[this.row]}`;
+        this.firstMove = true;
     }
 
     findLegalMoves(){
+        if (this.firstMove){
+            return [`${boardCols[this.col]}${boardRows[this.row-1]}`, `${boardCols[this.col]}${boardRows[this.row-2]}`];
+
+        }
         return this.row>0?`${boardCols[this.col]}${boardRows[this.row-1]}`:"";
     }
     move(col, row){
+        if (this.firstMove) this.firstMove = false;
         document.querySelector(`#${this.position}`).style.backgroundImage = "";
         this.col = boardCols.indexOf(col);
         this.row = boardRows[row];
@@ -36,12 +42,18 @@ class blackPawn extends piece {
     constructor(row, col, color, image){
         super(row, col, color, image);
         this.position = `${boardCols[this.col]}${boardRows[this.row]}`;
+        this.firstMove = true;
     }
 
     findLegalMoves(){
+        if (this.firstMove){
+            return [`${boardCols[this.col]}${boardRows[this.row+1]}`, `${boardCols[this.col]}${boardRows[this.row+2]}`];
+
+        }
         return this.row>0?`${boardCols[this.col]}${boardRows[this.row+1]}`:"";
     }
     move(col, row){
+        if (this.firstMove) this.firstMove = false;
         document.querySelector(`#${this.position}`).style.backgroundImage = "";
         this.col = boardCols.indexOf(col);
         this.row = boardRows[row];

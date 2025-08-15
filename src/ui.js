@@ -1,6 +1,6 @@
 export function createBoard(){
     return `
-    <div class="grid grid-cols-8 border-double border-amber-900 border-[2px] w-[400px] h-[400px]">
+    <div id="board" class="grid grid-cols-8 border-double border-amber-900 border-[2px] w-[400px] h-[400px]">
         <div class="light-square tile" id="a8"></div> <div class="dark-square tile" id="b8"></div> <div class="light-square tile" id="c8"></div> <div class="dark-square tile" id="d8"></div> <div class="light-square tile" id="e8"></div> <div class="dark-square tile" id="f8"></div> <div class="light-square tile" id="g8"></div> <div class="dark-square tile" id="h8"></div>
         <div class="dark-square tile" id="a7"></div> <div class="light-square tile" id="b7"></div> <div class="dark-square tile" id="c7"></div> <div class="light-square tile" id="d7"></div> <div class="dark-square tile" id="e7"></div> <div class="light-square tile" id="f7"></div> <div class="dark-square tile" id="g7"></div> <div class="light-square tile" id="h7"></div>
         <div class="light-square tile" id="a6"></div> <div class="dark-square tile" id="b6"></div> <div class="light-square tile" id="c6"></div> <div class="dark-square tile" id="d6"></div> <div class="light-square tile" id="e6"></div> <div class="dark-square tile" id="f6"></div> <div class="light-square tile" id="g6"></div> <div class="dark-square tile" id="h6"></div>

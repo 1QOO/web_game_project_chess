@@ -4,3 +4,7 @@ body{background-image: url("/img/bg_wood.png");}
 
 .light-square{background-color: rgb(255, 195, 140);height: 50px;width: 50px;background-size: contain;}
 .dark-square{background-color: rgb(124, 16, 16);height: 50px;width: 50px;background-size: contain;}
+#board>*{
+    outline: 0 solid lime;
+    outline-offset: -5px;
+}
