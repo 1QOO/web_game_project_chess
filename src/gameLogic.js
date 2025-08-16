@@ -17,58 +17,54 @@ export function gameStart(elements, event){
         arrayOfElements.push(elements[i]);
     }
     arrayOfElements.forEach((element)=>{
-        element.addEventListener(event, ()=>checkCoord(element.id));
+        element.addEventListener(event, ()=>selectTile(element.id));
     })
 }
 
-//FUNCTION TO SELECT A TILE, IF A TILE HAS A PIECE ON IT, THE PIECE CAN TAKE ACTION
-export function checkPiece(coord){
-    action(coord);
-    if (isWhiteTurn){
-        for (let piece of whitePieces){
-            if (piece.position==coord){
-                legalTile = piece.findLegalMoves();
-                selectedPiece = piece;
-                selectedCoord = coord;
-                turnTileOnOff(ON, selectedCoord);
-                break;
-            }
-        }
+//FUNCTION TO SELECT A TILE
+export function selectTile(coord){
+    if (coord == selectedCoord) {
+        turnTileOnOff(OFF, selectedCoord);
+        selectedCoord = "";
+        selectedPiece = "";
     }
     else {
-        for (let piece of blackPieces){
-            if (piece.position==coord){
-                legalTile = piece.findLegalMoves();
-                selectedPiece = piece;
-                selectedCoord = coord;
-                turnTileOnOff(ON, selectedCoord);
-                break;
-            }
+        if (!(selectedPiece)) {
+            if (isWhiteTurn) checkNSelectPiece(whitePieces, coord);
+            else checkNSelectPiece(blackPieces, coord);
+        }
+        else {
+            if (legalTile.includes(coord)) selectedPiece.move(coord);
+            turnTileOnOff(OFF, selectedCoord);
+            selectedCoord = "";
+            selectedPiece = "";
+            isWhiteTurn = !isWhiteTurn;
         }
     }
 }
 
-//FUNCTION IF PLAYER TAKE A LEGAL MOVE
-function action(coord){
-    if (legalTile[0]){
-        turnTileOnOff(OFF, selectedCoord);
-        if (legalTile.includes(coord)){
-            isWhiteTurn = !isWhiteTurn
-            legalTile = [""];
-            selectedPiece.move(coord.at(0), coord.at(1));
-            selectedPiece = "";
+function checkNSelectPiece(pieces, coord){
+    const tile = document.getElementById(coord);
+    if (tile.style.backgroundImage){
+        for (let piece of pieces){
+            if (piece.position==coord){
+                if (piece.isPlayable) {
+                    legalTile = piece.findLegalMoves();
+                    if (legalTile[0]){
+                        selectedPiece = piece;
+                        selectedCoord = coord
+                        turnTileOnOff(ON);
+                    }
+                    break;
+                }
+                break;
+            }
         }
-        else {
-            selectedPiece = "";
-            legalTile = [""];
-        }
-    }
-    else {
     }
 }
 
 //HIGHLIGHT AND DEHIGHLIGHT A SELECTED PIECE'S TILE
-function turnTileOnOff(turn, coord){
-    let tile = document.getElementById(coord)
+function turnTileOnOff(turn){
+    let tile = document.getElementById(selectedCoord)
     turn?tile.style.outlineWidth = "5px":tile.style.outlineWidth = 0;
 }
