@@ -19,10 +19,12 @@ class whitePawn extends pieceParent {
         for (this.tileId of this.capturableTiles){
             this.tile = document.getElementById(this.tileId);
 
-            if (this.tile.style.backgroundImage){
-                for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
-                    this.legalMove.unshift(this.tileId);
-                    break;
+            if(this.tile){
+                if (this.tile.style.backgroundImage){
+                    for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
+                        this.legalMove.unshift(this.tileId);
+                        break;
+                    }
                 }
             }
         }
@@ -64,10 +66,12 @@ class blackPawn extends pieceParent {
         for (this.tileId of this.capturableTiles){
             this.tile = document.getElementById(this.tileId);
 
-            if (this.tile.style.backgroundImage){
-                for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
-                    this.legalMove.unshift(this.tileId);
-                    break;
+            if(this.tile){
+                if (this.tile.style.backgroundImage){
+                    for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
+                        this.legalMove.unshift(this.tileId);
+                        break;
+                    }
                 }
             }
         }
