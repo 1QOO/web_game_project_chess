@@ -1,4 +1,4 @@
-import {whitePieces, blackPieces} from './pieces.js';
+import { whitePieces, blackPieces } from './pieces/pieces.js';
 
 let isWhiteTurn = true;
 let selectedCoord = "";
@@ -34,11 +34,13 @@ export function selectTile(coord){
             else checkNSelectPiece(blackPieces, coord);
         }
         else {
-            if (legalTile.includes(coord)) selectedPiece.move(coord);
+            if (legalTile.includes(coord)) {
+                isWhiteTurn ? selectedPiece.move(coord, blackPieces) : selectedPiece.move(coord, whitePieces);
+                isWhiteTurn = !isWhiteTurn;
+            }
             turnTileOnOff(OFF, selectedCoord);
             selectedCoord = "";
             selectedPiece = "";
-            isWhiteTurn = !isWhiteTurn;
         }
     }
 }
@@ -49,7 +51,7 @@ function checkNSelectPiece(pieces, coord){
         for (let piece of pieces){
             if (piece.position==coord){
                 if (piece.isPlayable) {
-                    legalTile = piece.findLegalMoves();
+                    legalTile = isWhiteTurn ? piece.findLegalMoves(blackPieces) : piece.findLegalMoves(whitePieces);
                     if (legalTile[0]){
                         selectedPiece = piece;
                         selectedCoord = coord
