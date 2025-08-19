@@ -22,4 +22,14 @@ export class pieceParent {
         }
         document.querySelector(`#${this.position}`).style.backgroundImage = "";
     }
+    move(position, opponentPieces){
+        document.querySelector(`#${this.position}`).style.backgroundImage = "";
+        this.position = position;
+        this.col = boardCols.indexOf(position.at(0));
+        this.row = boardRows.indexOf(position.at(1));
+        if (document.querySelector(`#${this.position}`).style.backgroundImage){
+            this.capturePiece(this.position, opponentPieces);
+        }
+        this.display(this.position);
+    }
 }
