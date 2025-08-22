@@ -1,50 +1,43 @@
-import { boardRows, boardCols, pieceParent} from './pieceParent.js';
-import { blackPieces } from './pieces.js';
+import { pieceParent} from './pieceParent.js';
 
 //WHITE PAWN
 class whitePawn extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
-        this.position = `${boardCols[this.col]}${boardRows[this.row]}`;
         this.firstMove = true;
+        this.targetOfEnPasant = false;
     }
 
-    findLegalMoves(opponentPieces){
+    findLegalMoves(board){
         this.legalMove = [];
-        this.tileAheadCoord = `${boardCols[this.col]}${boardRows[this.row-1]}`;
-        this.tileAhead = document.querySelector(`#${this.tileAheadCoord}`);
-        this.capturableTiles = [`${boardCols[this.col-1]}${boardRows[this.row-1]}`, `${boardCols[this.col+1]}${boardRows[this.row-1]}`];
+        const tileAhead = board[this.row-1][this.col];
+        const twoTileAhead = board[this.row-2][this.col];
+        const capturableTile1 = board[this.row-1][this.col-1];
+        const capturableTile2 = board[this.row-1][this.col+1];
 
-        (!(this.tileAhead.style.backgroundImage) && this.row>0) ? this.legalMove.unshift(this.tileAheadCoord) : this.legalMove.unshift("");
-        for (this.tileId of this.capturableTiles){
-            this.tile = document.getElementById(this.tileId);
-
-            if(this.tile){
-                if (this.tile.style.backgroundImage){
-                    for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
-                        this.legalMove.unshift(this.tileId);
-                        break;
-                    }
-                }
-            }
+        if (this.row>0 && !(tileAhead)){
+            this.legalMove.push(`${this.row-1}${this.col}`);
+            if (this.firstMove && !(twoTileAhead)) this.legalMove.push(`${this.row-2}${this.col}`);
         }
-        if (this.legalMove[0] && this.firstMove){
-            this.twoTileAheadCoord =`${boardCols[this.col]}${boardRows[this.row-2]}`;
-
-            !(document.getElementById(this.twoTileAheadCoord).style.backgroundImage) ? this.legalMove.unshift(this.twoTileAheadCoord):false;
+        if (this.row>0 && this.col>0 && capturableTile1){
+            if (capturableTile1.color = "black") this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`)
+        }
+        if (this.row>0 && this.col<7 && capturableTile2){
+            if (capturableTile2.color = "black") this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`)
         }
         return this.legalMove;
     }
-    move(position, opponentPieces){
+    move(coord, board){
         if (this.firstMove) this.firstMove = false;
-        document.querySelector(`#${this.position}`).style.backgroundImage = "";
-        this.position = position;
-        this.col = boardCols.indexOf(position.at(0));
-        this.row = boardRows.indexOf(position.at(1));
-        if (document.querySelector(`#${this.position}`).style.backgroundImage){
-            super.capturePiece(this.position, opponentPieces);
+        document.getElementById(`${this.row}${this.col}`).style.backgroundImage = "";
+        if (board[coord.at(0)][coord.at(1)]){
+            this.capturePiece(`${coord.at(0)}${coord.at(1)}`, board);
         }
-        this.display(this.position);
+        board[coord.at(0)][coord.at(1)] = board[this.row][this.col]
+        board[this.row][this.col] = "";
+        this.row = Number(coord.at(0));
+        this.col = Number(coord.at(1));
+        this.display();
     }
 }
 
@@ -52,67 +45,61 @@ class whitePawn extends pieceParent {
 class blackPawn extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
-        this.position = `${boardCols[this.col]}${boardRows[this.row]}`;
         this.firstMove = true;
+        this.targetOfEnPasant = false;
     }
 
-    findLegalMoves(opponentPieces){
+    findLegalMoves(board){
         this.legalMove = [];
-        this.tileAheadCoord = `${boardCols[this.col]}${boardRows[this.row+1]}`;
-        this.tileAhead = document.querySelector(`#${this.tileAheadCoord}`);
-        this.capturableTiles = [`${boardCols[this.col-1]}${boardRows[this.row+1]}`, `${boardCols[this.col+1]}${boardRows[this.row+1]}`];
+        const tileAhead = board[this.row+1][this.col];
+        const twoTileAhead = board[this.row+2][this.col];
+        const capturableTile1 = board[this.row+1][this.col-1];
+        const capturableTile2 = board[this.row+1][this.col+1];
 
-        (!(this.tileAhead.style.backgroundImage) && this.row<7) ? this.legalMove.unshift(this.tileAheadCoord) : this.legalMove.unshift("");
-        for (this.tileId of this.capturableTiles){
-            this.tile = document.getElementById(this.tileId);
-
-            if(this.tile){
-                if (this.tile.style.backgroundImage){
-                    for (this.piece of opponentPieces) if (this.tileId == this.piece.position) {
-                        this.legalMove.unshift(this.tileId);
-                        break;
-                    }
-                }
-            }
+        if (this.row<7 && !(tileAhead)){
+            this.legalMove.push(`${this.row+1}${this.col}`);
+            if (this.firstMove && !(twoTileAhead)) this.legalMove.push(`${this.row+2}${this.col}`);
         }
-        if (this.legalMove[0] && this.firstMove){
-            this.twoTileAheadCoord =`${boardCols[this.col]}${boardRows[this.row+2]}`;
-
-            !(document.getElementById(this.twoTileAheadCoord).style.backgroundImage) ? this.legalMove.unshift(this.twoTileAheadCoord):false;
+        if (this.row<7 && this.col>0 && capturableTile1){
+            if (capturableTile1.color = "white") this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`)
+        }
+        if (this.row<7 && this.col<7 && capturableTile2){
+            if (capturableTile2.color = "white") this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`)
         }
         return this.legalMove;
     }
-    move(position, opponentPieces){
+    move(coord, board){
         if (this.firstMove) this.firstMove = false;
-        document.querySelector(`#${this.position}`).style.backgroundImage = "";
-        this.position = position;
-        this.col = boardCols.indexOf(position.at(0));
-        this.row = boardRows.indexOf(position.at(1));
-        if (document.querySelector(`#${this.position}`).style.backgroundImage){
-            super.capturePiece(this.position, opponentPieces);
+        document.getElementById(`${this.row}${this.col}`).style.backgroundImage = "";
+        if (board[coord.at(0)][coord.at(1)]){
+            this.capturePiece(`${coord.at(0)}${coord.at(1)}`, board);
         }
-        this.display(this.position);
+        board[coord.at(0)][coord.at(1)] = board[this.row][this.col]
+        board[this.row][this.col] = "";
+        this.row = Number(coord.at(0));
+        this.col = Number(coord.at(1));
+        this.display();
     }
 }
 
 
-const whitePawn1 = new whitePawn(0, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn2 = new whitePawn(1, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn3 = new whitePawn(2, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn4 = new whitePawn(3, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn5 = new whitePawn(4, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn6 = new whitePawn(5, 6, "white", "/img/white_pawn_highlighted.png");
+const whitePawn1 = new whitePawn(6, 0, "white", "/img/white_pawn_highlighted.png");
+const whitePawn2 = new whitePawn(6, 1, "white", "/img/white_pawn_highlighted.png");
+const whitePawn3 = new whitePawn(6, 2, "white", "/img/white_pawn_highlighted.png");
+const whitePawn4 = new whitePawn(6, 3, "white", "/img/white_pawn_highlighted.png");
+const whitePawn5 = new whitePawn(6, 4, "white", "/img/white_pawn_highlighted.png");
+const whitePawn6 = new whitePawn(6, 5, "white", "/img/white_pawn_highlighted.png");
 const whitePawn7 = new whitePawn(6, 6, "white", "/img/white_pawn_highlighted.png");
-const whitePawn8 = new whitePawn(7, 6, "white", "/img/white_pawn_highlighted.png");
+const whitePawn8 = new whitePawn(6, 7, "white", "/img/white_pawn_highlighted.png");
 
-const blackPawn1 = new blackPawn(0, 1, "black", "/img/black_pawn_highlighted.png");
+const blackPawn1 = new blackPawn(1, 0, "black", "/img/black_pawn_highlighted.png");
 const blackPawn2 = new blackPawn(1, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn3 = new blackPawn(2, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn4 = new blackPawn(3, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn5 = new blackPawn(4, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn6 = new blackPawn(5, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn7 = new blackPawn(6, 1, "black", "/img/black_pawn_highlighted.png");
-const blackPawn8 = new blackPawn(7, 1, "black", "/img/black_pawn_highlighted.png");
+const blackPawn3 = new blackPawn(1, 2, "black", "/img/black_pawn_highlighted.png");
+const blackPawn4 = new blackPawn(1, 3, "black", "/img/black_pawn_highlighted.png");
+const blackPawn5 = new blackPawn(1, 4, "black", "/img/black_pawn_highlighted.png");
+const blackPawn6 = new blackPawn(1, 5, "black", "/img/black_pawn_highlighted.png");
+const blackPawn7 = new blackPawn(1, 6, "black", "/img/black_pawn_highlighted.png");
+const blackPawn8 = new blackPawn(1, 7, "black", "/img/black_pawn_highlighted.png");
 
 export const whitePawns = [whitePawn1, whitePawn2, whitePawn3, whitePawn4, whitePawn5, whitePawn6, whitePawn7, whitePawn8];
 export const blackPawns = [blackPawn1, blackPawn2, blackPawn3, blackPawn4, blackPawn5, blackPawn6, blackPawn7, blackPawn8];

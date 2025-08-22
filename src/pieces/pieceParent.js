@@ -1,35 +1,29 @@
-export const boardRows = ['8', '7', '6', '5', '4', '3', '2', '1'];
-export const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
 export class pieceParent {
-    constructor(col, row, color, image){
+    constructor(row, col, color, image){
         this.isPlayable = true;
         this.row = row;
         this.col = col;
-        this.position = `${boardCols[this.col]}${boardRows[this.row]}`;
         this.color = color;
         this.image = `url("${image}")`;
     }
-    display(position){
-        document.querySelector(`#${position}`).style.backgroundImage = this.image
+    display(){
+        document.getElementById(`${this.row}${this.col}`).style.backgroundImage = this.image
     };
-    capturePiece(position, opponentPieces){
-        for (this.piece of opponentPieces) {
-            if (position == this.piece.position){
-                this.piece.isPlayable = false;
-                break;
-            }
-        }
-        document.querySelector(`#${this.position}`).style.backgroundImage = "";
+    capturePiece(coord, board){
+        const row = Number(coord.at(0));
+        const col = Number(coord.at(1));
+        document.getElementById(coord).style.backgroundImage = "";
+        board[row][col].isPlayable = false;
     }
-    move(position, opponentPieces){
-        document.querySelector(`#${this.position}`).style.backgroundImage = "";
-        this.position = position;
-        this.col = boardCols.indexOf(position.at(0));
-        this.row = boardRows.indexOf(position.at(1));
-        if (document.querySelector(`#${this.position}`).style.backgroundImage){
-            this.capturePiece(this.position, opponentPieces);
+    move(coord, board){
+        document.getElementById(`${this.row}${this.col}`).style.backgroundImage = "";
+        if (board[coord.at(0)][coord.at(1)]){
+            this.capturePiece(`${coord.at(0)}${coord.at(1)}`, board);
         }
-        this.display(this.position);
+        board[coord.at(0)][coord.at(1)] = board[this.row][this.col]
+        board[this.row][this.col] = "";
+        this.row = Number(coord.at(0));
+        this.col = Number(coord.at(1));
+        this.display();
     }
 }
