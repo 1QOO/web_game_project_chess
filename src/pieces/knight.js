@@ -3,6 +3,7 @@ import { pieceParent } from "./pieceParent";
 class knight extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
+        this.notation = 'N';
     }
     
     findLegalMoves(board){

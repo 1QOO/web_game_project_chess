@@ -3,6 +3,7 @@ import { pieceParent } from "./pieceParent";
 class bishop extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
+        this.notation = 'B';
     }
 
     findLegalMoves(board){

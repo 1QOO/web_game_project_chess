@@ -4,8 +4,9 @@ import { pieceParent} from './pieceParent.js';
 class whitePawn extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
+        this.notation = 'p';
         this.firstMove = true;
-        this.targetOfEnPasant = false;
+        this.enPasant = false;
     }
 
     findLegalMoves(board){
@@ -14,24 +15,28 @@ class whitePawn extends pieceParent {
         const twoTileAhead = board[this.row-2][this.col];
         const capturableTile1 = board[this.row-1][this.col-1];
         const capturableTile2 = board[this.row-1][this.col+1];
+        const captureableEnPasant1 = board[this.row][this.col-1];
+        const captureableEnPasant2 = board[this.row][this.col+1];
 
         if (this.row>0 && !(tileAhead)){
             this.legalMove.push(`${this.row-1}${this.col}`);
             if (this.firstMove && !(twoTileAhead)) this.legalMove.push(`${this.row-2}${this.col}`);
         }
-        if (this.row>0 && this.col>0 && capturableTile1){
-            if (capturableTile1.color = "black") this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`)
-        }
-        if (this.row>0 && this.col<7 && capturableTile2){
-            if (capturableTile2.color = "black") this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`)
-        }
+        if (this.row>0 && this.col>0 && capturableTile1) this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`);
+        if (this.row>0 && this.col>0 && captureableEnPasant1.color != this.color && captureableEnPasant1.enPasant) this.legalMove.push(`${captureableEnPasant1.row-1}${captureableEnPasant1.col}`);
+        if (this.row>0 && this.col<7 && capturableTile2) this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`);
+        if (this.row>0 && this.col<7 && captureableEnPasant2.color != this.color && captureableEnPasant2.enPasant) this.legalMove.push(`${captureableEnPasant2.row-1}${captureableEnPasant2.col}`);
+        
         return this.legalMove;
     }
     move(coord, board){
         if (this.firstMove) this.firstMove = false;
         document.getElementById(`${this.row}${this.col}`).style.backgroundImage = "";
-        if (board[coord.at(0)][coord.at(1)]){
-            this.capturePiece(`${coord.at(0)}${coord.at(1)}`, board);
+        if (this.col != coord.at(1)){
+            if (board[coord.at(0)][coord.at(1)]){
+                this.capturePiece(`${coord.at(0)}${coord.at(1)}`);
+            }
+            else this.doEnPasant(coord, board);
         }
         board[coord.at(0)][coord.at(1)] = board[this.row][this.col]
         board[this.row][this.col] = "";
@@ -39,14 +44,19 @@ class whitePawn extends pieceParent {
         this.col = Number(coord.at(1));
         this.display();
     }
+    doEnPasant(coord, board){
+        document.getElementById(`${this.row}${coord.at(1)}`).style.backgroundImage = "";
+        board[this.row][Number(coord.at(1))] = "";
+    }
 }
 
 //BLACK PAWN
 class blackPawn extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
+        this.notation = 'p';
         this.firstMove = true;
-        this.targetOfEnPasant = false;
+        this.enPasant = false;
     }
 
     findLegalMoves(board){
@@ -55,30 +65,38 @@ class blackPawn extends pieceParent {
         const twoTileAhead = board[this.row+2][this.col];
         const capturableTile1 = board[this.row+1][this.col-1];
         const capturableTile2 = board[this.row+1][this.col+1];
+        const captureableEnPasant1 = board[this.row][this.col-1];
+        const captureableEnPasant2 = board[this.row][this.col+1];
 
         if (this.row<7 && !(tileAhead)){
             this.legalMove.push(`${this.row+1}${this.col}`);
             if (this.firstMove && !(twoTileAhead)) this.legalMove.push(`${this.row+2}${this.col}`);
         }
-        if (this.row<7 && this.col>0 && capturableTile1){
-            if (capturableTile1.color = "white") this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`)
-        }
-        if (this.row<7 && this.col<7 && capturableTile2){
-            if (capturableTile2.color = "white") this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`)
-        }
+        if (this.row>0 && this.col>0 && capturableTile1) this.legalMove.push(`${capturableTile1.row}${capturableTile1.col}`);
+        if (this.row>0 && this.col>0 && captureableEnPasant1.color != this.color && captureableEnPasant1.enPasant) this.legalMove.push(`${captureableEnPasant1.row+1}${captureableEnPasant1.col}`);
+        if (this.row>0 && this.col<7 && capturableTile2) this.legalMove.push(`${capturableTile2.row}${capturableTile2.col}`);
+        if (this.row>0 && this.col<7 && captureableEnPasant2.color != this.color && captureableEnPasant2.enPasant) this.legalMove.push(`${captureableEnPasant2.row+1}${captureableEnPasant2.col}`);
+        
         return this.legalMove;
     }
     move(coord, board){
         if (this.firstMove) this.firstMove = false;
         document.getElementById(`${this.row}${this.col}`).style.backgroundImage = "";
-        if (board[coord.at(0)][coord.at(1)]){
-            this.capturePiece(`${coord.at(0)}${coord.at(1)}`, board);
+        if (this.col != coord.at(1)){
+            if (board[coord.at(0)][coord.at(1)]){
+                this.capturePiece(`${coord.at(0)}${coord.at(1)}`);
+            }
+            else this.doEnPasant(coord, board);
         }
         board[coord.at(0)][coord.at(1)] = board[this.row][this.col]
         board[this.row][this.col] = "";
         this.row = Number(coord.at(0));
         this.col = Number(coord.at(1));
         this.display();
+    }
+    doEnPasant(coord, board){
+        document.getElementById(`${this.row}${coord.at(1)}`).style.backgroundImage = "";
+        board[Number(coord.at(0))-1][Number(coord.at(1))] = "";
     }
 }
 

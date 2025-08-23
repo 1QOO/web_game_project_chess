@@ -3,6 +3,7 @@ import {pieceParent} from './pieceParent.js';
 class queen extends pieceParent {
     constructor(row, col, color, image){
         super(row, col, color, image);
+        this.notation = 'Q';
     }
     
     findLegalMoves(board){

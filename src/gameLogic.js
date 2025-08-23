@@ -1,9 +1,11 @@
 import { whitePieces, blackPieces, board } from './pieces/pieces.js';
+import {whiteKing, blackKing} from './pieces/king.js';
 
 let isWhiteTurn = true;
 let selectedPiece = "";
 let legalTile = [""];
 let selectedCoord = "";
+let enPasant = "";
 const ON = true;
 const OFF = false;
 
@@ -30,7 +32,19 @@ export function selectTile(coord){
         if (selectedPiece){
             turnTileOnOff(OFF, selectedCoord);
             if(legalTile.includes(coord)){
+                const pieceRow = selectedPiece.row;
+                const coordRow = coord.at(0);
+
+                if(enPasant){
+                    enPasant.enPasant = false;
+                    enPasant = "";
+                }
+                if (selectedPiece.notation == 'p' && (pieceRow-coordRow==2||pieceRow-coordRow==-2)){
+                    enPasant = selectedPiece;
+                    enPasant.enPasant = true;
+                }
                 selectedPiece.move(coord, board);
+                blackKing.isChecked(board);
                 selectedPiece = "";
                 legalTile = [];
                 isWhiteTurn = !isWhiteTurn;
@@ -50,7 +64,19 @@ export function selectTile(coord){
         if (selectedPiece){
             turnTileOnOff(OFF, selectedCoord);
             if(legalTile.includes(coord)){
+                const pieceRow = selectedPiece.row;
+                const coordRow = coord.at(0);
+
+                if(enPasant){
+                    enPasant.enPasant = false;
+                    enPasant = "";
+                }
+                if (selectedPiece.notation == 'p' && (pieceRow-coordRow==2||pieceRow-coordRow==-2)){
+                    enPasant = selectedPiece;
+                    enPasant.enPasant = true;
+                }
                 selectedPiece.move(coord, board);
+                whiteKing.isChecked(board);
                 selectedPiece = "";
                 legalTile = [];
                 isWhiteTurn = !isWhiteTurn;
