@@ -1,18 +1,10 @@
-import { whitePieces, blackPieces, board } from './pieces/pieces.js';
-import {whiteKing, blackKing} from './pieces/king.js';
+import { board } from './board.js';
 
 let isWhiteTurn = true;
-let selectedPiece = "";
-let legalTile = [""];
-let selectedCoord = "";
-let enPasant = "";
-const ON = true;
-const OFF = false;
+let selectedTile = null;
 
-export function gameStart(elements, event){
+export function gameStart(elements, event, displayPiece){
     const arrayOfElements = [];
-//SET PIECES ON THEIR STARTING TILE    
-    whitePieces.concat(blackPieces).forEach((item)=>item.display(item.col, item.row));
 
 //ADD EVENT LISTENER TO ALL TILES
     for (let i=0;i<elements.length;++i){
@@ -21,98 +13,48 @@ export function gameStart(elements, event){
     arrayOfElements.forEach((element)=>{
         element.addEventListener(event, ()=>selectTile(element.id));
     })
-}
-
-//FUNCTION TO SELECT A TILE
-export function selectTile(coord){
-    const row = coord.at(0);
-    const col = coord.at(1);
-
-    if(isWhiteTurn){
-        if (selectedPiece){
-            turnTileOnOff(OFF, selectedCoord);
-            if(legalTile.includes(coord)){
-                const pieceRow = selectedPiece.row;
-                const coordRow = coord.at(0);
-
-                if(enPasant){
-                    enPasant.enPasant = false;
-                    enPasant = "";
-                }
-                if (selectedPiece.notation == 'p' && (pieceRow-coordRow==2||pieceRow-coordRow==-2)){
-                    enPasant = selectedPiece;
-                    enPasant.enPasant = true;
-                }
-                selectedPiece.move(coord, board);
-                blackKing.isChecked(board);
-                selectedPiece = "";
-                legalTile = [];
-                isWhiteTurn = !isWhiteTurn;
-            }
-            else{
-                selectedPiece = "";
-                legalTile = [""];
-                selectPiece(row, col, "white");
-            }
-        }
-        else{
-            selectPiece(row, col, "white");
-        }
-    }
-    else{
-        const piece = board[row][col]
-        if (selectedPiece){
-            turnTileOnOff(OFF, selectedCoord);
-            if(legalTile.includes(coord)){
-                const pieceRow = selectedPiece.row;
-                const coordRow = coord.at(0);
-
-                if(enPasant){
-                    enPasant.enPasant = false;
-                    enPasant = "";
-                }
-                if (selectedPiece.notation == 'p' && (pieceRow-coordRow==2||pieceRow-coordRow==-2)){
-                    enPasant = selectedPiece;
-                    enPasant.enPasant = true;
-                }
-                selectedPiece.move(coord, board);
-                whiteKing.isChecked(board);
-                selectedPiece = "";
-                legalTile = [];
-                isWhiteTurn = !isWhiteTurn;
-            }
-            else{
-                selectedPiece = "";
-                legalTile = [""];
-                selectPiece(row, col, "black");
-            }
-        }
-        else{
-            selectPiece(row, col, "black");
-        }
+    for (let tile of board.tiles){
+        if (tile.piece) displayPiece(tile);
     }
 }
 
-function selectPiece(row, col, turn){
-    const selectedTile = board[row][col];
-    if (selectedTile){
-        if (selectedTile.color == turn){
-            selectedPiece = selectedTile;
-            legalTile = selectedPiece.findLegalMoves(board);
-            selectedCoord = `${row}${col}`;
-            if(legalTile[0]) turnTileOnOff(ON, `${row}${col}`);
-        }
+export function selectTile(tileId){
+    let row = tileId.at(1);
+    let col = tileId.at(0);
+
+    switch(col){
+        case 'a' : {col = 0; break;}
+        case 'b' : {col = 1; break;}
+        case 'c' : {col = 2; break;}
+        case 'd' : {col = 3; break;}
+        case 'e' : {col = 4; break;}
+        case 'f' : {col = 5; break;}
+        case 'g' : {col = 6; break;}
+        case 'h' : {col = 7; break;}
+        default : break;
     }
+
+    let tileIndex = 64-(8*row)+col;
+
+    if(isWhiteTurn) selectTileFilter("white", tileIndex);
+    else selectTileFilter("black");
 }
 
-//HIGHLIGHT AND DEHIGHLIGHT A SELECTED PIECE'S TILE
-function turnTileOnOff(turn, tileId){
-    let tile = document.getElementById(tileId)
-    if(turn){
-        tile.style.outlineWidth = "5px"
+function selectTileFilter(turn, tileIndex){
+    if(selectedTile){
+        if (selectedTile.piece.tileIndex === tileIndex){
+            selectedTile = null;
+        }
+        else if(selectedTile.piece.legalMoves.include(tileIndex)){
+            board.movePiece(selectedTile, board[tileIndex]);
+            selectedTile = null;
+        }
+        else if(board[tileIndex].piece && board[tileIndex].piece.color === turn){
+            selectedTile = board[tileIndex];
+        }
+        else selectTile = null;
     }
-    else{
-        tile.style.outlineWidth = 0;
-        selectedCoord="";
+    else if (board[tileIndex].piece && board[tileIndex].piece.color === turn){
+        selectedTile = board[tileIndex];
     }
 }

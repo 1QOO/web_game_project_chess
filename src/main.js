@@ -1,10 +1,11 @@
 import './style.css';
-import { createBoard } from './ui.js';
+import { createBoard, displayPiece } from './ui.js';
 import { gameStart, selectTile } from './gameLogic.js';
 
 document.querySelector("#app").innerHTML = createBoard();
 
+//MAIN LOOP
 document.addEventListener("DOMContentLoaded",()=>{
-    gameStart(document.getElementsByClassName("tile"), "click");
+    gameStart(document.getElementsByClassName("tile"), "click", displayPiece);
     window.selectTile = selectTile;
 });
