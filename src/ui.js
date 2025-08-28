@@ -14,5 +14,9 @@ export function createBoard(){
 }
 
 export function displayPiece(tile){
-    document.getElementById(tile.id).style.backgroundImage = tile.piece.image;
+    const id = tile.id;
+    let image = ""
+
+    if(tile.piece) image = tile.piece.image;
+    document.getElementById(id).style.backgroundImage = `url("${image}")`;
 }

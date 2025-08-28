@@ -5,8 +5,9 @@ class whitePawn extends pieceParent {
     constructor(tileIndex, color, image){
         super(tileIndex, color, image);
         this.notation = 'p';
-        this.enPasant = false;
-        this.moves = [-8];
+        this.firstMove = true;
+        this.moves = [-8, -16];
+        this.controlsTiles = [-9, -7];
     }
 }
 
@@ -15,8 +16,9 @@ class blackPawn extends pieceParent {
     constructor(tileIndex, color, image){
         super(tileIndex, color, image);
         this.notation = 'p';
-        this.enPasant = false;
-        this.moves = [+8];
+        this.firstMove = true;
+        this.moves = [8, 16];
+        this.controlsTiles = [7, 9];
     }
 }
 

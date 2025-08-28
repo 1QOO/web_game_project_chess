@@ -4,7 +4,7 @@ class knight extends pieceParent {
     constructor(tileIndex, color, image){
         super(tileIndex, color, image);
         this.notation = 'N';
-        this.moves = [-15, -6, 10, 17, 15, 6, -10, -17];
+        this.moves = [-10, -17, -15, -6, 10, 17, 15, 6];
     }
 }
 const whiteKnight1 = new knight(57, "white", "/img/white_knight_highlighted.png");
