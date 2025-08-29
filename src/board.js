@@ -1,3 +1,4 @@
+import { blackKing } from "./pieces/king";
 import { whitePieces,blackPieces } from "./pieces/pieces";
 
 class tile {
@@ -10,6 +11,8 @@ class tile {
 
 export const board = {
     tiles : [],
+    whiteKing : 60,
+    blackKing : 4,
     enPasantTarget : null,
     movePiece : function(start, end){
         let renderTiles = [start];
@@ -20,15 +23,21 @@ export const board = {
             if(enPasant) renderTiles.push(enPasant);
         }
 
+        if(start.piece.notation === 'K' && start.piece.color === "white") this.whiteKing = end;
+        if(start.piece.notation === 'K' && start.piece.color === "black") this.blackKing = end;
+
         start.piece.tileIndex = end;
         end = this.tiles[end]
         end.piece = start.piece;
         start.piece = null;
         renderTiles.push(end);
 
+        for (let tile of this.tiles) tile.controledBy = [];
         for (let tile of this.tiles){
             if(tile.piece) this.scannMoves(tile.piece);
         }
+        this.isChecked(end.piece.color);
+        this.kingScanns();
         return renderTiles;
     },
     pawnMoves : function(start, end){
@@ -56,32 +65,41 @@ export const board = {
         for (let move of piece.moves){
             let nextMove = piece.tileIndex+move;
 
-            if(piece.notation == 'p'){
-                this.pawnScanns(piece, nextMove);
-            }
-            else{
-                while(true){
-                    if (0>nextMove || nextMove>63) break;
-    
-                    if(move === 1 && nextMove%8 === 0) break;
-                    if(move === -1 && nextMove%8 === 7) break;
-                    if((move === 7 || move === -9) && nextMove%8 === 7) break;
-                    if((move === 9 || move === -7) && nextMove%8 === 0) break;
-                    if((move === 15 || move === 17) && nextMove%8 === 0) break;
-                    if((move === -6 || move === 10) && nextMove%8 < 2) break;
-                    if((move === -17 || move === 15) && nextMove%8 === 7) break;
-                    if((move === -10 || move === 6) && nextMove%8 > 5) break;
-    
-                    if(this.tiles[nextMove].piece){
-                        if(this.tiles[nextMove].piece.color != piece.color){
-                            piece.legalMoves.push(nextMove);
-                            break;
+            if(piece.notation !== 'K'){
+                if(piece.notation === 'p'){
+                    this.pawnScanns(piece, nextMove);
+                }
+                else {
+                    piece.controlsTiles = [];
+                    while(true){
+                        if (0>nextMove || nextMove>63) break;
+        
+                        if(move === 1 && nextMove%8 === 0) break;
+                        if(move === -1 && nextMove%8 === 7) break;
+                        if((move === 7 || move === -9) && nextMove%8 === 7) break;
+                        if((move === 9 || move === -7) && nextMove%8 === 0) break;
+                        if((move === 15 || move === 17) && nextMove%8 === 0) break;
+                        if((move === -6 || move === 10) && nextMove%8 < 2) break;
+                        if((move === -17 || move === 15) && nextMove%8 === 7) break;
+                        if((move === -10 || move === 6) && nextMove%8 > 5) break;
+        
+                        if(this.tiles[nextMove].piece){
+                            if(this.tiles[nextMove].piece.color != piece.color){
+                                piece.legalMoves.push(nextMove);
+                                this.tiles[nextMove].controledBy.push(piece);
+                                break;
+                            }
+                            else{
+                                this.tiles[nextMove].controledBy.push(piece);
+                                break;
+                            }
                         }
-                        else break;
+                        piece.legalMoves.push(nextMove);
+                        this.tiles[nextMove].controledBy.push(piece);
+                        nextMove += move;
+                        if(piece.notation === 'N') break;
                     }
-                    piece.legalMoves.push(nextMove);
-                    nextMove += move;
-                    if(['N', 'K'].includes(piece.notation)) break;
+                    piece.controlsTiles.concat(piece.legalMoves);
                 }
             }
         }
@@ -95,9 +113,10 @@ export const board = {
             if(tileIndex + move <0 || tileIndex + move >63) break;
             if(tileIndex%8 == 0 && (move === -9 || move === 7)) continue;
             if(tileIndex%8 == 7 && (move === -7 || move === 9)) continue;
-            if(this.tiles[tileIndex + move].piece && this.tiles[tileIndex + move].piece.color != piece.color){
+            if(this.tiles[tileIndex + move].piece && this.tiles[tileIndex + move].piece.color !== piece.color){
                 piece.legalMoves.push(tileIndex + move);
             }
+            this.tiles[tileIndex+move].controledBy.push(piece);
         }
         for(let enPasant of [-1, 1]){
             const tileIndex = piece.tileIndex;
@@ -110,6 +129,70 @@ export const board = {
         }
         if(this.tiles[nextMove].piece) return; //HERE
         piece.legalMoves.push(nextMove);
+    },
+    kingScanns : function(){
+        const kings = [this.tiles[this.whiteKing].piece, this.tiles[this.blackKing].piece];
+
+        for(let king of kings){
+            king.legalMoves = [];
+            console.log(king)
+            for(let move of king.moves){
+                const nextMove = king.tileIndex+move;
+                const nextTile = this.tiles[nextMove];
+                let opponentColor = "";
+                let isTileSafe = true;
+                king.color=="white"?opponentColor="black":opponentColor="white";
+
+                if (0>nextMove || nextMove>63) continue;
+
+                if(move === 1 && nextMove%8 === 0) continue;
+                if(move === -1 && nextMove%8 === 7) continue;
+                if((move === 7 || move === -9) && nextMove%8 === 7) continue;
+                if((move === 9 || move === -7) && nextMove%8 === 0) continue;
+                if((move === 15 || move === 17) && nextMove%8 === 0) continue;
+                if((move === -6 || move === 10) && nextMove%8 < 2) continue;
+                if((move === -17 || move === 15) && nextMove%8 === 7) continue;
+                if((move === -10 || move === 6) && nextMove%8 > 5) continue;
+                console.log(nextTile.id, nextTile.controledBy)
+
+                for(let tile of nextTile.controledBy){
+                    if (tile.color === opponentColor){
+                        isTileSafe = false;
+                        break;
+                    }
+                }
+
+                if(this.tiles[nextMove].piece){
+                    if(nextTile.piece.color === opponentColor){
+                        if(isTileSafe) king.legalMoves.push(nextMove);
+                        nextTile.controledBy.push(king);
+                        continue;
+                    }
+                    else{
+                        nextTile.controledBy.push(king);
+                        continue;
+                    }
+                }
+                if(isTileSafe)king.legalMoves.push(nextMove);
+                nextTile.controledBy.push(king);
+            }
+                console.log("")
+        }
+        
+    },
+    isChecked : function(turn){
+        if(turn === "white"){
+            const kingTile = this.tiles[this.blackKing];
+            for (let piece of kingTile.controledBy){
+                if (piece.color === turn) alert("Check.");
+            }
+        }
+        else {
+            const kingTile = this.tiles[this.whiteKing];
+            for (let piece of kingTile.controledBy){
+                if (piece.color === turn) alert("Check.");
+            }
+        }
     }
 }
 
