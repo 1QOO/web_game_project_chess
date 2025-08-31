@@ -1,4 +1,3 @@
-import { blackKing } from "./pieces/king";
 import { whitePieces,blackPieces } from "./pieces/pieces";
 
 class tile {
@@ -15,6 +14,7 @@ export const board = {
     blackKing : 4,
     enPasantTarget : null,
     movePiece : function(start, end){
+        const turnColor = start.piece.color;
         let renderTiles = [start];
         if(this.enPasantTarget)this.enPasantTarget = null;
         
@@ -36,7 +36,7 @@ export const board = {
         for (let tile of this.tiles){
             if(tile.piece) this.scannMoves(tile.piece);
         }
-        this.isChecked(end.piece.color);
+        this.isChecked(turnColor);
         this.kingScanns();
         return renderTiles;
     },
@@ -135,7 +135,6 @@ export const board = {
 
         for(let king of kings){
             king.legalMoves = [];
-            console.log(king)
             for(let move of king.moves){
                 const nextMove = king.tileIndex+move;
                 const nextTile = this.tiles[nextMove];
@@ -153,7 +152,6 @@ export const board = {
                 if((move === -6 || move === 10) && nextMove%8 < 2) continue;
                 if((move === -17 || move === 15) && nextMove%8 === 7) continue;
                 if((move === -10 || move === 6) && nextMove%8 > 5) continue;
-                console.log(nextTile.id, nextTile.controledBy)
 
                 for(let tile of nextTile.controledBy){
                     if (tile.color === opponentColor){
@@ -176,7 +174,6 @@ export const board = {
                 if(isTileSafe)king.legalMoves.push(nextMove);
                 nextTile.controledBy.push(king);
             }
-                console.log("")
         }
         
     },
@@ -184,14 +181,85 @@ export const board = {
         if(turn === "white"){
             const kingTile = this.tiles[this.blackKing];
             for (let piece of kingTile.controledBy){
-                if (piece.color === turn) alert("Check.");
+                if (piece.color === turn){
+                    alert("Check.");
+                    this.checkResponse(turn);
+                }
             }
         }
         else {
             const kingTile = this.tiles[this.whiteKing];
             for (let piece of kingTile.controledBy){
-                if (piece.color === turn) alert("Check.");
+                if (piece.color === turn){
+                    alert("Check.");
+                    this.checkResponse(turn);
+                }
             }
+        }
+    },
+    checkResponse : function(turnColor){
+        let kingTile;
+        let attacker;
+        let step;
+        turnColor === "white"?kingTile=this.tiles[this.blackKing]:kingTile=this.tiles[this.whiteKing];
+        const kingIndex = kingTile.piece.tileIndex;
+        let attackerIndex;
+        const attackerLine = [];
+        const attackerLineIndex = [];
+
+        for (let piece of kingTile.controledBy) if(piece.color === turnColor) attacker = piece;
+        attackerIndex = attacker.tileIndex;
+        if(kingIndex%8 === attackerIndex%8) kingIndex>attackerIndex? step=8: step=-8;
+        if(kingIndex - attackerIndex<8 || kingIndex - attackerIndex>-8) kingIndex>attackerIndex? step=1: step=-1;
+        if(kingIndex%8>attackerIndex%8) kingIndex>attacker? step=9: step=-7;
+        if(kingIndex%8<attackerIndex%8) kingIndex>attacker? step=7: step=-9;
+        console.log("Attacker index", attackerIndex)
+        console.log("Step =",step);
+        console.log("King index =", kingIndex)
+        while(true){
+            console.log("Tile Index =",attackerIndex);
+            if(attackerIndex === kingIndex) break;
+            attackerLine.push(this.tiles[attackerIndex]);
+            attackerLineIndex.push(attackerIndex);
+            attackerIndex+=step;
+        }
+        console.log(attackerLine);
+        if(turnColor==="white") for(let piece of blackPieces){
+            if(piece.notation === 'p'){
+                for(let move of piece.moves){
+                    if(attackerLineIndex.includes(piece.tileIndex+move)){
+                        piece.legalMoves = [piece.tileIndex+move]
+                        break;
+                    }
+                    else piece.legalMoves = [];
+                }
+            }
+            else piece.legalMoves = [];
+        }
+        else for(let piece of whitePieces){
+            if(piece.notation === 'p'){
+                for(let move of piece.moves){
+                    if(attackerLineIndex.includes(piece.tileIndex+move)){
+                        piece.legalMoves = [piece.tileIndex+move]
+                        break;
+                    }
+                    else piece.legalMoves = [];
+                }
+            }
+            else piece.legalMoves = [];
+        }
+        console.log("Attacker line =", attackerLine);
+        console.log("")
+        for(let tile of attackerLine){
+            console.log("In attackerLine iteration")
+            for(let piece of tile.controledBy){
+                console.log("In tile iteration")
+                if(piece.color !== turnColor){
+                    console.log("Piece =",piece);
+                    piece.legalMoves.push(this.tiles.indexOf(tile))
+                }
+            }
+            console.log("")
         }
     }
 }
