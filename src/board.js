@@ -13,6 +13,7 @@ export const board = {
     whiteKing : 60,
     blackKing : 4,
     enPasantTarget : null,
+    pinnedPiece : [],
     movePiece : function(start, end){
         const turnColor = start.piece.color;
         let renderTiles = [start];
@@ -34,6 +35,8 @@ export const board = {
 
         for (let tile of this.tiles) tile.controledBy = [];
         for (let tile of this.tiles) if(tile.piece) this.scannMoves(tile.piece);
+        for(let piece of this.pinnedPiece) piece.legalMoves = [];
+        this.pinnedPiece = [];
 
         this.isChecked(turnColor);
         this.kingScanns();
@@ -70,6 +73,7 @@ export const board = {
                 }
                 else {
                     piece.controlsTiles = [];
+                    let pinnedPiece = null;
                     while(true){
                         if (0>nextMove || nextMove>63) break;
         
@@ -84,9 +88,15 @@ export const board = {
         
                         if(this.tiles[nextMove].piece){
                             if(this.tiles[nextMove].piece.color != piece.color){
-                                piece.legalMoves.push(nextMove);
-                                this.tiles[nextMove].controledBy.push(piece);
-                                break;
+                                if(!pinnedPiece){
+                                    piece.legalMoves.push(nextMove);
+                                    this.tiles[nextMove].controledBy.push(piece);
+                                    if(this.tiles[nextMove].piece.notation !== 'K') pinnedPiece = this.tiles[nextMove].piece;
+                                }
+                                else {
+                                    if(this.tiles[nextMove].piece.notation === 'K') this.pinnedPiece.push(pinnedPiece);
+                                    break;
+                                }
                             }
                             else{
                                 this.tiles[nextMove].controledBy.push(piece);
