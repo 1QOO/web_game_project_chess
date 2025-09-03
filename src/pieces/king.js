@@ -5,6 +5,7 @@ class king extends pieceParent {
         super(tileIndex, color, image);
         this.notation = 'K';
         this.moves = [-8, -7, +1, +9, +8, +7, -1, -9];
+        this.hasNotMoved = true;
     }
 }
 

@@ -5,6 +5,7 @@ class rook extends pieceParent {
         super(tileIndex, color, image);
         this.notation = 'R';
         this.moves = [-8, 1, 8, -1];
+        this.hasNotMoved = true;
     }
 }
 

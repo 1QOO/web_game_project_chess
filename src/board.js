@@ -24,14 +24,21 @@ export const board = {
             if(enPasant) renderTiles.push(enPasant);
         }
 
-        if(start.piece.notation === 'K' && start.piece.color === "white") this.whiteKing = end;
-        if(start.piece.notation === 'K' && start.piece.color === "black") this.blackKing = end;
+        if(start.piece.notation === 'K'){
+            let renderRook = null;
+            if(start.piece.color === "white") this.whiteKing = end;
+            else this.blackKing = end;
+
+            if(start.piece.tileIndex-end === 2 || start.piece.tileIndex-end === -2) renderRook = this.castle(start.piece.tileIndex, end);
+            if(renderRook) renderTiles=renderTiles.concat(renderRook);
+        }
 
         start.piece.tileIndex = end;
         end = this.tiles[end]
         end.piece = start.piece;
         start.piece = null;
         renderTiles.push(end);
+        if((end.piece.notation === 'K' || end.piece.notation === 'R') && end.piece.hasNotMoved) end.piece.hasNotMoved = false;
 
         for (let tile of this.tiles) tile.controledBy = [];
         for (let tile of this.tiles) if(tile.piece) this.scannMoves(tile.piece);
@@ -183,6 +190,7 @@ export const board = {
                 if(isTileSafe)king.legalMoves.push(nextMove);
                 nextTile.controledBy.push(king);
             }
+            this.castlingScann(king);
         }
         
     },
@@ -279,7 +287,64 @@ export const board = {
                 }
             }
         }
-        console.log(piecesSet)
+    },
+    castlingScann : function(king){
+        let kingIsSafe = true;
+        for(let piece of this.tiles[king.tileIndex].controledBy) if(piece.color !== king.color) kingIsSafe = false;
+
+        if(king.hasNotMoved && kingIsSafe){
+            let shortCastling = true;
+            let longCastling = true;
+            const leftCornerTile = this.tiles[king.tileIndex-4];
+            const rightCornerTile = this.tiles[king.tileIndex+3];
+
+            if(leftCornerTile.piece && leftCornerTile.piece.color === king.color && leftCornerTile.piece.notation === 'R' && leftCornerTile.piece.hasNotMoved){
+                for(let tileIndex = king.tileIndex-1; tileIndex%8>0; tileIndex--){
+                    if(this.tiles[tileIndex].piece){
+                        longCastling = false;
+                        break;
+                    }
+                    else if(tileIndex%8>1){
+                        for(let piece of this.tiles[tileIndex].controledBy) if(piece.color !== king.color){
+                            longCastling = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(rightCornerTile.piece && rightCornerTile.piece.color === king.color && rightCornerTile.piece.notation === 'R' && rightCornerTile.piece.hasNotMoved){
+                for(let tileIndex = king.tileIndex+1; tileIndex%8<7; tileIndex++){
+                    if(this.tiles[tileIndex].piece){
+                        shortCastling = false;
+                        break;
+                    }
+                    else if(tileIndex%8<7){
+                        for(let piece of this.tiles[tileIndex].controledBy) if(piece.color !== king.color){
+                            shortCastling = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(longCastling)king.legalMoves.push(king.tileIndex-2);
+            if(shortCastling)king.legalMoves.push(king.tileIndex+2);
+        }
+    },
+    castle : function(start, end){
+        if(start>end){
+            this.tiles[start-1].piece = this.tiles[start-4].piece;
+            this.tiles[start-4].piece = null;
+            this.tiles[start-1].piece.hasNotMoved = false;
+
+            return [this.tiles[start-1], this.tiles[start-4]];
+        }
+        else {
+            this.tiles[start+1].piece = this.tiles[start+3].piece;
+            this.tiles[start+3].piece = null;
+            this.tiles[start+1].piece.hasNotMoved = false;
+
+            return [this.tiles[start+1], this.tiles[start+3]];
+        }
     }
 }
 
@@ -307,6 +372,6 @@ for (let index=0; index<16; index++){
     board.tiles[index+48].piece = whitePieces[index];
 }
 for (let index=0; index<16; index++){
-    board.scannMoves(board.tiles[index].piece);
-    board.scannMoves(board.tiles[index+48].piece);
+    if(board.tiles[index].piece) board.scannMoves(board.tiles[index].piece);
+    if(board.tiles[index+48].piece) board.scannMoves(board.tiles[index+48].piece);
 }
