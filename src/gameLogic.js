@@ -32,7 +32,7 @@ function selectTileFilter(turn, tileIndex){
     if(selectedTile){
         if (selectedTile.piece.tileIndex === tileIndex){
             selectedTile = null;
-            return null;
+            return tileIndex;
         }
         else if(selectedTile.piece.legalMoves.includes(tileIndex)){
             const tiles = board.movePiece(selectedTile, tileIndex);
@@ -40,9 +40,9 @@ function selectTileFilter(turn, tileIndex){
             isWhiteTurn = !isWhiteTurn;
             return tiles;
         }
-        else if(board.tiles[tileIndex].piece && board.tiles[tileIndex].piece.color === turn){
+        else if(board.tiles[tileIndex].piece && board.tiles[tileIndex].piece.color === turn && board.tiles[tileIndex].piece.legalMoves.length){
             selectedTile = board.tiles[tileIndex];
-            return null;
+            return board.tiles[tileIndex].id;
         }
         else {
             selectedTile = null;
@@ -50,7 +50,10 @@ function selectTileFilter(turn, tileIndex){
         }
     }
     else {
-        if (board.tiles[tileIndex].piece && board.tiles[tileIndex].piece.color === turn) selectedTile = board.tiles[tileIndex];
+        if (board.tiles[tileIndex].piece && board.tiles[tileIndex].piece.color === turn && board.tiles[tileIndex].piece.legalMoves.length){
+            selectedTile = board.tiles[tileIndex];
+            return board.tiles[tileIndex].id;
+        }
         return null;
     }
 }

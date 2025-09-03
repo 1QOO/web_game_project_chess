@@ -1,6 +1,9 @@
 import './style.css';
-import { createBoard, displayPiece } from './ui.js';
+import { createBoard, displayPiece, highlight } from './ui.js';
 import { startPieces, selectTile } from './gameLogic.js';
+
+
+let selectedTileId = null;
 
 document.querySelector("#app").innerHTML = createBoard();
 
@@ -22,8 +25,34 @@ function handleBoard(tileId){
     renderTiles = selectTile(tileId);
 
     if (renderTiles){
-        console.log(renderTiles)
-        for (let tile of renderTiles) displayPiece(tile);
+        if(!Array.isArray(renderTiles)){
+            if(!selectedTileId){
+                highlight(true, tileId);
+                selectedTileId = tileId;
+            }
+            else{
+                if(selectedTileId === tileId){
+                    highlight(false, tileId);
+                    selectedTileId = null;
+                }
+                else {
+                    highlight(false, selectedTileId);
+                    highlight(true, tileId);
+                    selectedTileId = tileId;
+                }
+            }
+        }
+        else{
+            for (let tile of renderTiles) displayPiece(tile);
+            highlight(false, selectedTileId);
+            selectedTileId = null;
+        }
+    }
+    else {
+        if(selectedTileId){
+            highlight(false, selectedTileId);
+            selectedTileId = null;
+        }
     }
 }
 

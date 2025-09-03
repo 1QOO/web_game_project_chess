@@ -20,3 +20,10 @@ export function displayPiece(tile){
     if(tile.piece) image = tile.piece.image;
     document.getElementById(id).style.backgroundImage = `url("${image}")`;
 }
+
+export function highlight(ON, id){
+    const className = document.getElementById(id).className;
+
+    if(ON) document.getElementById(id).className += " highlight";
+    else document.getElementById(id).className = className.split(' ')[0]+' '+className.split(' ')[1];
+}

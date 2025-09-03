@@ -16,6 +16,8 @@ export const board = {
     pinnedPiece : [],
     movePiece : function(start, end){
         const turnColor = start.piece.color;
+        const opponentPieces = turnColor=="white"?blackPieces:whitePieces;
+        const opponentKing = turnColor=="white"?this.tiles[this.blackKing].piece:this.tiles[this.whiteKing].piece;
         let renderTiles = [start];
         if(this.enPasantTarget)this.enPasantTarget = null;
         
@@ -34,7 +36,8 @@ export const board = {
         }
 
         start.piece.tileIndex = end;
-        end = this.tiles[end]
+        end = this.tiles[end];
+        if(end.piece) end.piece.legalMoves = null;
         end.piece = start.piece;
         start.piece = null;
         renderTiles.push(end);
@@ -47,6 +50,28 @@ export const board = {
 
         this.isChecked(turnColor);
         this.kingScanns();
+
+        let endGame = true;
+        for(let piece of opponentPieces){
+            if(piece.notation !== 'K') if(piece.legalMoves.length){
+                endGame = false;
+                break;
+            }
+        }
+        if(endGame){
+            if(opponentKing.legalMoves.length) endGame = false;
+            else{
+                let checkmate = false;
+                for(let piece of this.tiles[opponentKing.tileIndex].controledBy) if(piece.color !== opponentKing.color) checkmate = true;
+                if(checkmate){
+                    alert("CHECKMATE.");
+                }
+                else{
+                    alert("STALEMATE.");
+                }
+            }
+        }
+
         return renderTiles;
     },
     pawnMoves : function(start, end){
@@ -71,57 +96,60 @@ export const board = {
     scannMoves : function(piece){
         piece.legalMoves = [];
 
-        for (let move of piece.moves){
-            let nextMove = piece.tileIndex+move;
+        if(piece.notation === 'p'){
+            this.pawnScanns(piece);
+        }
+        else if(piece.notation !== 'K'){
+            for (let move of piece.moves){
+                let nextMove = piece.tileIndex+move;
+                piece.controlsTiles = [];
+                let pinnedPiece = null;
 
-            if(piece.notation !== 'K'){
-                if(piece.notation === 'p'){
-                    this.pawnScanns(piece, nextMove);
-                }
-                else {
-                    piece.controlsTiles = [];
-                    let pinnedPiece = null;
-                    while(true){
-                        if (0>nextMove || nextMove>63) break;
-        
-                        if(move === 1 && nextMove%8 === 0) break;
-                        if(move === -1 && nextMove%8 === 7) break;
-                        if((move === 7 || move === -9) && nextMove%8 === 7) break;
-                        if((move === 9 || move === -7) && nextMove%8 === 0) break;
-                        if((move === 15 || move === 17) && nextMove%8 === 0) break;
-                        if((move === -6 || move === 10) && nextMove%8 < 2) break;
-                        if((move === -17 || move === 15) && nextMove%8 === 7) break;
-                        if((move === -10 || move === 6) && nextMove%8 > 5) break;
-        
-                        if(this.tiles[nextMove].piece){
-                            if(this.tiles[nextMove].piece.color != piece.color){
-                                if(!pinnedPiece){
-                                    piece.legalMoves.push(nextMove);
-                                    this.tiles[nextMove].controledBy.push(piece);
-                                    if(this.tiles[nextMove].piece.notation !== 'K') pinnedPiece = this.tiles[nextMove].piece;
-                                }
-                                else {
-                                    if(this.tiles[nextMove].piece.notation === 'K') this.pinnedPiece.push(pinnedPiece);
-                                    break;
-                                }
-                            }
-                            else{
+                while(true){
+                    if (0>nextMove || nextMove>63) break;
+    
+                    if(move === 1 && nextMove%8 === 0) break;
+                    if(move === -1 && nextMove%8 === 7) break;
+                    if((move === 7 || move === -9) && nextMove%8 === 7) break;
+                    if((move === 9 || move === -7) && nextMove%8 === 0) break;
+                    if((move === 15 || move === 17) && nextMove%8 === 0) break;
+                    if((move === -6 || move === 10) && nextMove%8 < 2) break;
+                    if((move === -17 || move === 15) && nextMove%8 === 7) break;
+                    if((move === -10 || move === 6) && nextMove%8 > 5) break;
+    
+                    if(this.tiles[nextMove].piece){
+                        if(this.tiles[nextMove].piece.color != piece.color){
+                            if(!pinnedPiece){
+                                piece.legalMoves.push(nextMove);
                                 this.tiles[nextMove].controledBy.push(piece);
+                                if(this.tiles[nextMove].piece.notation !== 'K') pinnedPiece = this.tiles[nextMove].piece;
+                            }
+                            else {
+                                if(this.tiles[nextMove].piece.notation === 'K') this.pinnedPiece.push(pinnedPiece);
                                 break;
                             }
                         }
-                        piece.legalMoves.push(nextMove);
-                        this.tiles[nextMove].controledBy.push(piece);
-                        nextMove += move;
-                        if(piece.notation === 'N') break;
+                        else{
+                            this.tiles[nextMove].controledBy.push(piece);
+                            break;
+                        }
                     }
+                    piece.legalMoves.push(nextMove);
+                    this.tiles[nextMove].controledBy.push(piece);
+                    nextMove += move;
+                    if(piece.notation === 'N') break;
+                    
                     piece.controlsTiles.concat(piece.legalMoves);
                 }
             }
         }
     },
-    pawnScanns : function(piece, nextMove){
-        if (0>nextMove || nextMove>63) return;//HERE
+    pawnScanns : function(piece){
+
+        for(let move of piece.moves){
+            if(piece.tileIndex+move<0 || piece.tileIndex>63 || this.tiles[piece.tileIndex+move].piece) break;
+            piece.legalMoves.push(piece.tileIndex+move);
+        }
 
         for(let move of piece.controlsTiles){
             const tileIndex = piece.tileIndex;
@@ -131,6 +159,7 @@ export const board = {
             if(tileIndex%8 == 7 && (move === -7 || move === 9)) continue;
             if(this.tiles[tileIndex + move].piece && this.tiles[tileIndex + move].piece.color !== piece.color){
                 piece.legalMoves.push(tileIndex + move);
+                console.log("Push", tileIndex+move)
             }
             this.tiles[tileIndex+move].controledBy.push(piece);
         }
@@ -141,10 +170,8 @@ export const board = {
 
             if(tileIndex%8 == 0 && enPasant === -1) continue;
             if(tileIndex%8 == 7 && enPasant === 1) continue;
-            if(tileIndex + enPasant == this.enPasantTarget) piece.legalMoves.push(tileIndex+enPasant+row);
+            if(tileIndex + enPasant == this.enPasantTarget && this.enPasantTarget.color !== piece.color) piece.legalMoves.push(tileIndex+enPasant+row);
         }
-        if(this.tiles[nextMove].piece) return; //HERE
-        piece.legalMoves.push(nextMove);
     },
     kingScanns : function(){
         const kings = [this.tiles[this.whiteKing].piece, this.tiles[this.blackKing].piece];
@@ -235,16 +262,13 @@ export const board = {
             return;
         }
 
-        for (let piece of kingTile.controledBy) if(piece.color === turnColor) attacker = piece;
         attackerIndex = attacker.tileIndex;
         if(kingIndex%8 === attackerIndex%8) kingIndex>attackerIndex? step=8: step=-8;
         if(kingIndex - attackerIndex<8 || kingIndex - attackerIndex>-8) kingIndex>attackerIndex? step=1: step=-1;
         if(kingIndex%8>attackerIndex%8) kingIndex>attackerIndex? step=9: step=-7;
         if(kingIndex%8<attackerIndex%8) kingIndex>attackerIndex? step=7: step=-9;
-        console.log("Step =", step)
 
         while(true){
-            console.log("Tile Index =",attackerIndex);
             if(attackerIndex === kingIndex) break;
             attackerLine.push(this.tiles[attackerIndex]);
             attackerLineIndex.push(attackerIndex);
@@ -253,13 +277,10 @@ export const board = {
         }
         
         if(turnColor==="white") for(let piece of blackPieces){
-            if(piece.notation === 'p'){
-                for(let move of piece.moves){
-                    if(attackerLineIndex.includes(piece.tileIndex+move)){
-                        console.log(piece.legalMoves.length);
-                        piece.legalMoves = [piece.tileIndex+move]
-                        console.log(piece.legalMoves.length);
-                        console.log("")
+            if(piece.notation === 'p' && piece.legalMoves){
+                for(let move of piece.legalMoves){
+                    if(attackerLineIndex.includes(move)){
+                        piece.legalMoves = [move]
                         break;
                     }
                     else piece.legalMoves = [];
@@ -267,11 +288,11 @@ export const board = {
             }
             else piece.legalMoves = [];
         }
-        else for(let piece of whitePieces){
-            if(piece.notation === 'p'){
-                for(let move of piece.moves){
-                    if(attackerLineIndex.includes(piece.tileIndex+move)){
-                        piece.legalMoves = [piece.tileIndex+move]
+        else for(let piece of blackPieces){
+            if(piece.notation === 'p' && piece.legalMoves){
+                for(let move of piece.legalMoves){
+                    if(attackerLineIndex.includes(move)){
+                        piece.legalMoves = [move]
                         break;
                     }
                     else piece.legalMoves = [];
@@ -282,7 +303,7 @@ export const board = {
         
         for(let tile of attackerLine){
             for(let piece of tile.controledBy){
-                if(piece.color !== turnColor){
+                if(piece.color !== turnColor && piece.notation !== 'p'){
                     piece.legalMoves.push(this.tiles.indexOf(tile))
                 }
             }
