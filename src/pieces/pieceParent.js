@@ -1,8 +1,8 @@
 export class pieceParent {
-    constructor(tileIndex, color, image){
-        this.tileIndex = tileIndex;
+    constructor(color, image){
+        this.tileIndex = null;
         this.color = color;
-        this.image = image
+        this.image = image;
         this.legalMoves = null;
         this.controlsTiles = null;
     }

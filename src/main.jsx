@@ -1,13 +1,19 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client'
 import './style.css';
-import { createBoard, displayPiece, highlight } from './ui.js';
-import { startPieces, selectTile } from './gameLogic.js';
+import { CreateBoard} from './ui';
+ import { selectTile, setPieces } from './gameLogic.js';
 
 
 let selectedTileId = null;
 
-document.querySelector("#app").innerHTML = createBoard();
-
-function gameStart(elements, event, displayPiece){
+createRoot(document.getElementById("app")).render(
+    <StrictMode>
+        <CreateBoard board={setPieces()} callBack={selectTile}/>
+    </StrictMode>
+)
+/* 
+function gameSet(elements, event, displayPiece){
     const arrayOfElements = [];
 
 //ADD EVENT LISTENER TO ALL TILES
@@ -17,9 +23,11 @@ function gameStart(elements, event, displayPiece){
     arrayOfElements.forEach((element)=>{
         element.addEventListener(event, ()=>handleBoard(element.id));
     })
-    for (let tile of startPieces) displayPiece(tile);
+    for(let tile of setPieces()) renderTile(tile);
 }
-
+*/
+    // console.log(setPieces());
+/*
 function handleBoard(tileId){
     let renderTiles = null;
     renderTiles = selectTile(tileId);
@@ -58,5 +66,5 @@ function handleBoard(tileId){
 
 //MAIN LOOP
 document.addEventListener("DOMContentLoaded",()=>{
-    gameStart(document.getElementsByClassName("tile"), "click", displayPiece);
-});
+    gameSet(document.getElementsByClassName("tile"), "click", renderTile);
+}); */
