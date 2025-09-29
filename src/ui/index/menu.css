@@ -1,0 +1,44 @@
+@keyframes entry-anim {
+    from {
+        transform: scaleY(0);
+    }
+}
+
+.menu{
+    animation-name: entry-anim;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-out;
+    overflow: hidden;
+}
+
+button{
+    background-color: rgb(180, 70, 0);
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: bold;
+}
+
+button:hover{
+    box-shadow: 0 0 2px 1px white;
+    cursor: pointer;
+}
+
+button:active{
+    box-shadow: 0 0 2px 1px white;
+    cursor: pointer;
+    background-color: rgb(255, 98, 0);
+}
+
+.left-button, .right-button{
+    padding:0;
+    background: none;
+}
+.left-button:hover, .right-button:hover{
+    box-shadow: none;
+}
+.left-button:active, .right-button:active{
+    box-shadow: none;
+    background: none;
+}
