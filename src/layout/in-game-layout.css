@@ -1,0 +1,13 @@
+.in-game-layout{
+    height: 100vh;
+    width: 100vw;
+}
+
+@media screen and (orientation: potrait){
+
+.in-game-layout{
+    display: flex;
+    flex-direction: column nowrap;
+}
+
+}

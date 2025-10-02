@@ -2,6 +2,6 @@
 .dark-square{background-color: rgb(124, 16, 16);background-size: contain;}
 
 .highlight{
-    outline: 5px solid lime;
-    outline-offset: -5px;
+    outline: 0.3rem solid lime;
+    outline-offset: -0.3rem;
 }

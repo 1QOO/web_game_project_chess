@@ -1,5 +1,5 @@
 import { Index } from '/src/layout/index';
-import { Board } from './layout/ingame';
+import { InGame } from './layout/ingame';
 import { useState } from 'react';
 
 export function App(){
@@ -11,6 +11,6 @@ export function App(){
 
     switch(state){
         case "Index" : {return <Index handleMainState={handleMainState}/>}
-        case "InGame" : {return <Board />}
+        case "InGame" : {return <InGame />}
     }
 }

@@ -29,8 +29,8 @@ function MainMenu({handleState}){
 }
 
 function GameSetting({handleState, handleMainState}){
-    const opponents = ["Player", "Computer"];
-    const times = [0, 10, 15, 30, 60];
+    const opponents = ["Player"];
+    const times = [0];
     const [opponent, setOpponent] = useState(0);
     const [time, setTime] = useState(0);
 
