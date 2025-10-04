@@ -5,3 +5,16 @@
     outline: 0.3rem solid lime;
     outline-offset: -0.3rem;
 }
+
+.board{
+    height: calc(100vw - 2rem);
+    width: calc(100vw - 2rem);
+}
+
+@media  screen and (orientation: landscape) {
+.board{
+    height: calc(100vh - 2rem);
+    width: calc(100vh - 2rem);
+}
+    
+}

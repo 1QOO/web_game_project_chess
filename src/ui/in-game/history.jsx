@@ -1,8 +1,8 @@
 export function History({history}){
     return (
-        <div>
+        <div className="history bg-[rgba(0,0,0,0.7)] p-2 grow text-white rounded-md">
             <p>
-                {history.map(item=>`${history.notation} `)}
+                Here is moves history{/* {history.map(item=>`${history.notation} `)} */}
             </p>
         </div>
     )

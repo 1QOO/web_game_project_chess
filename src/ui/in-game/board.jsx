@@ -17,7 +17,7 @@ export function CreateBoard({board, callBack}){
     }
 
     return (
-        <div id="board" className="grid grid-cols-8 border-4 border-amber-900 w-fit h-fit m-auto">
+        <div id="board" className="board grid grid-cols-8 grid-rows-8 border-4 border-amber-900">
             {tiles.map((tile)=><CreateTiles id={tile.id} color={tile.color} piece={tile.piece} highlight={tile.highlight} tileClick={selectTile} key={tile.id}/>)}
         </div>
     )
@@ -26,7 +26,7 @@ export function CreateBoard({board, callBack}){
 function CreateTiles({id, color, piece, highlight, tileClick}){
 
     return (
-        <div className={"tile size-[35px] md:lg:size-[75px] "+color+(highlight?highlight:"")} id={id} onClick={()=>{tileClick(Number(id))}}>
+        <div className={"tile size-[100%] "+color+(highlight?highlight:"")} id={id} onClick={()=>{tileClick(Number(id))}}>
             {piece && <img src={piece} />}
         </div>
     )

@@ -1,5 +1,5 @@
 import { Index } from '/src/layout/index';
-import { InGame } from './layout/ingame';
+import { InGame } from '/src/layout/ingame';
 import { useState } from 'react';
 
 export function App(){

@@ -1,7 +1,9 @@
-import { CreateBoard } from '/src/ui/board';
-import { setPieces, selectTile } from '../lib/gameLogic';
+import { CreateBoard } from '/src/ui/in-game/board';
+import { setPieces, selectTile } from '/src/lib/gameLogic';
 import { Player } from '/src/ui/in-game/player'
 import { gameSettings } from '/src/lib/game-settings';
+import { Toolbar } from '../ui/in-game/toolbar';
+import { History } from '../ui/in-game/history';
 import './in-game-layout.css';
 
 export function InGame(){
@@ -10,6 +12,10 @@ export function InGame(){
             <Player player={gameSettings.player1} time={gameSettings.timeLimit}/>
             <CreateBoard board={setPieces()} callBack={selectTile} />
             <Player player={gameSettings.player2} time={gameSettings.timeLimit}/>
+            <div className='grow side-layout flex flex-col gap-2'>
+                <Toolbar />
+                <History />
+            </div>
         </div>
     )
 }

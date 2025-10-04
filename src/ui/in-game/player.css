@@ -1,0 +1,33 @@
+.player:first-child .profile{grid-area: profile1;}
+.player:first-child .cap-pieces{grid-area: cap-pieces1;}
+.player:first-child .timer{grid-area: timer1;}
+
+.player:nth-child(3) .profile{grid-area: profile2;}
+.player:nth-child(3) .cap-pieces{grid-area: cap-pieces2;}
+.player:nth-child(3) .timer{grid-area: timer2;}
+
+
+.player:first-child{
+    display: grid;
+    width: fit-content;
+    grid-template-areas: 'profile1 cap-pieces1' 'profile1 timer1' ;
+}
+
+.player:nth-child(3){
+    display: grid;
+    width: fit-content;
+    grid-template-areas: 'profile2 timer2' 'profile2 cap-pieces2' ;
+}
+
+@media screen and (orientation: landscape) {
+
+.player:first-child{
+    display: flex;
+    flex-direction: column;
+}
+
+.player:nth-child(3){
+    display: flex;
+    flex-direction: column-reverse;
+}
+}
