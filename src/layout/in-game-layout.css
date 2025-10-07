@@ -34,6 +34,7 @@
     .in-game-layout{
         display: grid;
         grid-template-areas:  'board player1 side-layout' 'board player2 side-layout';
+        grid-template-columns: max-content auto auto;
         width: fit-content;
         height: 100%;
         width: 100%;

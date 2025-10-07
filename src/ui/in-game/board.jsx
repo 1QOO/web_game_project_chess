@@ -1,8 +1,12 @@
 import './board.css';
 import { useState } from "react";
 
+export const boardStatus = {dissableBoard: null} 
+
 export function CreateBoard({board, callBack}){
     const [tiles, setTiles] = useState(board);
+
+    boardStatus.dissableBoard = board=>setTiles(board);
 
     const selectTile = (id)=>{
         const renderBoard = callBack(id);

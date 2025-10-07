@@ -1,3 +1,4 @@
+import { gameSettings, player2 } from '/src/lib/game-settings';
 import { useState } from 'react';
 import './menu.css';
 
@@ -30,7 +31,7 @@ function MainMenu({handleState}){
 
 function GameSetting({handleState, handleMainState}){
     const opponents = ["Player"];
-    const times = [0];
+    const times = [0, 1, 10, 20, 30];
     const [opponent, setOpponent] = useState(0);
     const [time, setTime] = useState(0);
 
@@ -52,6 +53,12 @@ function GameSetting({handleState, handleMainState}){
         else setTime(0);
     }
 
+    const submitGameSetting = ()=>{
+        gameSettings.opponent = player2;
+        gameSettings.timeLimit = times[time] * 1000 * 60;
+
+    }
+
     return (
         <div className="menu bg-amber-900 border-4 border-amber-500 rounded-2xl p-4">
             <h1 className="text-center text-white font-bold">Game Setting</h1>
@@ -71,7 +78,10 @@ function GameSetting({handleState, handleMainState}){
                 </div>
                 <div className='flex flex-row w-full justify-around gap-8'>
                     <button onClick={()=>handleState("MainMenu")}>Back</button>
-                    <button onClick={()=>handleMainState("InGame")}>Play</button>
+                    <button onClick={()=>{
+                        submitGameSetting();
+                        handleMainState("InGame");
+                    }}>Play</button>
                 </div>
             </div>
         </div>
