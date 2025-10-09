@@ -1,9 +1,10 @@
-import { board } from './board.js';
-import { whitePieces, blackPieces } from './pieces/pieces.js';
-import { gameSettings, Timer as timer } from './game-settings.js';
+import { board, whitePieces, blackPieces } from '/src/lib/board.js';
+import { movePiece, scannPieceMoves, isCheck } from '/src/lib/board-actions.js';
+import { gameSettings, Timer as timer } from '/src/lib/game-settings.js';
 import { playerDuration, opponentDuration } from '/src/layout/ingame.jsx';
 import { boardStatus } from '/src/ui/in-game/board';
 
+const pieces = whitePieces.concat(blackPieces);
 let isWhiteTurn = true;
 let selectedTile = null;
 let begin = false;
@@ -31,14 +32,14 @@ function getRemainingTime(timeDuration, lastTick, isWhiteTurn){
 }
 
 //RETURN ARRAY OF OBJECT(SIMPLE TILE OBJECT)
-function updateBoard(){
+function updateBoard(board){
     let updatedBoard = [];
 
-    for(let item of board.tiles){
-        updatedBoard.push({ id : item.id,
-                            color : item.color,
-                            piece : item.piece?item.piece.image:null,
-                            highlight : item.highlight
+    for(let tile of board.tiles){
+        updatedBoard.push({ id : tile.id,
+                            color : tile.color,
+                            piece : tile.piece?tile.piece.image:null,
+                            highlight : tile.highlight
                         });
     }
 
@@ -47,19 +48,21 @@ function updateBoard(){
 
 //SET PIECES ON BOARD AT GAME START AND RETURN ARRAY OF SIMPLE BOARD FOR RENDERING
 export function setPieces(){
-    for(let i=0; i<16; i++){
-        blackPieces[i].tileIndex = i;
-        board.tiles[i].piece = blackPieces[i]
-    }
+    for (let i=0; i<64; i++){
+        board.tiles[i].controledBy = [];
 
-    for(let i=0; i<16; i++){
-        whitePieces[i].tileIndex = i+48;
-        board.tiles[i+48].piece = whitePieces[i]
+        if(i<16){
+            blackPieces[i].tileIndex = i;
+            board.tiles[i].piece = blackPieces[i];
+        }
+        if(i>47){
+            whitePieces[i-48].tileIndex = i;
+            board.tiles[i].piece = whitePieces[i-48];
+        }
     }
-    
-    for(let piece of whitePieces.concat(blackPieces)) board.scannMoves(piece);
+    for(let piece of pieces) scannPieceMoves(board, piece);
 
-    return updateBoard();
+    return updateBoard(board);
 }
 
 //FUNCTION CALLED EVERYTIME A TILE IS SELECTED, ACCEPTS TILE'S ID
@@ -86,10 +89,7 @@ function checkSelectedTile(turn, id){
         selectedTile = board.tiles[id];
         selectedTile.highlight = " highlight";
 
-        return {updatedTiles : [id],
-                updatedBoard : updateBoard(),
-            }
-
+        return updateBoard(board);
     }
     else{
         //SAME TILE SELECTED
@@ -97,9 +97,7 @@ function checkSelectedTile(turn, id){
             selectedTile.highlight = null;
             selectedTile = null;
 
-            return {updatedTiles : [id],
-                    updatedBoard : updateBoard(),
-                }
+            return updateBoard(board);
         }
         //SELECTED TILE HAS PIECE WITH LEGAL MOVE
         if(PIECE){
@@ -108,34 +106,32 @@ function checkSelectedTile(turn, id){
             selectedTile = board.tiles[id];
             selectedTile.highlight = " highlight";
 
-            return {updatedTiles : updatedTiles,
-                    updatedBoard : updateBoard(),
-                }
+            return updateBoard(board);
         }
 
         //MOVE PIECE ON SELECTED TILE
         if(selectedTile.piece.legalMoves.includes(id)){
-            const updatedTiles = board.movePiece(selectedTile, id);
+            movePiece(board, selectedTile.piece, id);
+            board.tiles.map(tile=>{
+                tile.controledBy=[];
+            });
+            pieces.map(piece=>scannPieceMoves(board, piece));
+            isCheck(board, isWhiteTurn? board.blackKing: board.whiteKing);
             selectedTile.highlight = null;
             selectedTile = null;
             Timer.pause(isWhiteTurn);
             isWhiteTurn = !isWhiteTurn;
             Timer.start(isWhiteTurn);
 
-            return {updatedTiles : updatedTiles,
-                    updatedBoard : updateBoard(),
-                };
+            return updateBoard(board);
         }
 
         //SELECTED TILE HAS NO PIECE NOR LEGAL MOVE, RESET SELECTED PIECE
         if (!PIECE){
-            const prevSelectedTile = selectedTile.id
             selectedTile.highlight = null;
             selectedTile = null;
 
-            return {updatedTiles : [prevSelectedTile],
-                    updatedBoard : updateBoard(),
-                }
+            return updateBoard(board);
         }
     }
 }

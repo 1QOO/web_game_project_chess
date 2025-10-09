@@ -4,7 +4,7 @@ class rook extends pieceParent {
     constructor(color, image){
         super(color, image);
         this.notation = 'R';
-        this.moves = [-8, 1, 8, -1];
+        this.step = [-8, 1, 8, -1];
         this.hasNotMoved = true;
     }
 }

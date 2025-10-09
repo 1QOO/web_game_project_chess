@@ -3,7 +3,6 @@ export class pieceParent {
         this.tileIndex = null;
         this.color = color;
         this.image = image;
-        this.legalMoves = null;
-        this.controlsTiles = null;
+        this.legalMoves = [];
     }
 }

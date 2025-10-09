@@ -4,7 +4,7 @@ class knight extends pieceParent {
     constructor(color, image){
         super(color, image);
         this.notation = 'N';
-        this.moves = [-10, -17, -15, -6, 10, 17, 15, 6];
+        this.step = [-10, -17, -15, -6, 10, 17, 15, 6];
     }
 }
 const whiteKnight1 = new knight("white", "/img/white_knight_highlighted.png");

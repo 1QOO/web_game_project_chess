@@ -6,8 +6,7 @@ class whitePawn extends pieceParent {
         super(color, image);
         this.notation = 'p';
         this.firstMove = true;
-        this.moves = [-8, -16];
-        this.controlsTiles = [-9, -7];
+        this.step = -8;
     }
 }
 
@@ -17,8 +16,7 @@ class blackPawn extends pieceParent {
         super(color, image);
         this.notation = 'p';
         this.firstMove = true;
-        this.moves = [8, 16];
-        this.controlsTiles = [7, 9];
+        this.step = 8;
     }
 }
 

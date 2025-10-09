@@ -12,11 +12,10 @@ export function CreateBoard({board, callBack}){
         const renderBoard = callBack(id);
 
         if(renderBoard){
-            setTiles(prevTiles=>prevTiles.map(item=>
-                renderBoard.updatedTiles.includes(item.id)?{
-                    ...item, piece : renderBoard.updatedBoard[item.id].piece, highlight : renderBoard.updatedBoard[item.id].highlight
-                }: item
-            ))
+            setTiles((newState)=>{
+                newState = [...renderBoard];
+                return newState;
+            })
         }
     }
 

@@ -4,7 +4,7 @@ class queen extends pieceParent {
     constructor(color, image){
         super(color, image);
         this.notation = 'Q';
-        this.moves = [-8, -7, 1, 9, 8, 7, -1, -9];
+        this.step = [-8, -7, 1, 9, 8, 7, -1, -9];
     }
 }
 

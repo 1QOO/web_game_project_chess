@@ -4,7 +4,7 @@ class bishop extends pieceParent {
     constructor(color, image){
         super(color, image);
         this.notation = 'B';
-        this.moves = [7, -7, 9, -9];
+        this.step = [7, -7, 9, -9];
     }
 }
 
