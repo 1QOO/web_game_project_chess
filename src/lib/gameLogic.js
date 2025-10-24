@@ -1,7 +1,6 @@
 import { board, whitePieces, blackPieces } from '/src/lib/board.js';
 import { movePiece, scannPieceMoves, isCheck } from '/src/lib/board-actions.js';
 import { gameSettings, Timer as timer } from '/src/lib/game-settings.js';
-import { playerDuration, opponentDuration } from '/src/layout/ingame.jsx';
 import { boardStatus } from '/src/ui/in-game/board';
 
 const pieces = whitePieces.concat(blackPieces);
@@ -10,6 +9,9 @@ let selectedTile = null;
 let begin = false;
 let Timer;
 let gameOver = false;
+
+export let playerDuration = {setTime: null};
+export let opponentDuration = {setTime: null};
 
 function timeIsOver(){
     Timer.pause(isWhiteTurn);
@@ -20,6 +22,8 @@ function timeIsOver(){
         const updatedBoard = updateBoard();
         boardStatus.dissableBoard(updatedBoard);
     }
+    alert(`Time's Over.
+        ${isWhiteTurn?"White":"Black"} Lose`)
 }
 
 function getRemainingTime(timeDuration, lastTick, isWhiteTurn){

@@ -31,7 +31,7 @@ function MainMenu({handleState}){
 
 function GameSetting({handleState, handleMainState}){
     const opponents = ["Player"];
-    const times = [0, 1, 10, 20, 30];
+    const times = [1, 10, 20, 30];
     const [opponent, setOpponent] = useState(0);
     const [time, setTime] = useState(0);
 
@@ -73,7 +73,7 @@ function GameSetting({handleState, handleMainState}){
                 <span>Timer</span>
                 <div className='flex flex-row justify-between gap-4 w-[10rem] mb-4'>
                     <button className='left-button' onClick={leftClickTimer}>&lt;</button>
-                    <div>{time?`${times[time]} Min`:"No Timer"}</div>
+                    <div>{times[time]?`${times[time]} Min`:"No Timer"}</div>
                     <button className='right-button' onClick={rightClickTimer}>&gt;</button>
                 </div>
                 <div className='flex flex-row w-full justify-around gap-8'>
