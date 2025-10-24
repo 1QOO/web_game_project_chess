@@ -9,8 +9,8 @@ import './in-game-layout.css';
 export function InGame(){
     return (
         <div className='in-game-layout'>
-            <CreateBoard board={setPieces()} callBack={selectTile} />
             <Player player={gameSettings.opponent} duration={opponentDuration} />
+            <CreateBoard board={setPieces()} callBack={selectTile} />
             <Player player={gameSettings.player} duration={playerDuration} />
             <div className='grow side-layout flex flex-col gap-2'>
                 <Toolbar />

@@ -19,11 +19,10 @@ function timeIsOver(){
     gameOver = true;
     if(selectedTile){
         selectedTile.highlight = null;
-        const updatedBoard = updateBoard();
+        const updatedBoard = updateBoard(board);
         boardStatus.dissableBoard(updatedBoard);
     }
-    alert(`Time's Over.
-        ${isWhiteTurn?"White":"Black"} Lose`)
+    alert(`Time's Over. ${isWhiteTurn?"White":"Black"} Lose`)
 }
 
 function getRemainingTime(timeDuration, lastTick, isWhiteTurn){
@@ -91,7 +90,10 @@ function checkSelectedTile(turn, id){
             begin = true;
         }
         selectedTile = board.tiles[id];
-        selectedTile.highlight = " highlight";
+        selectedTile.highlight = ` 
+        outline-solid outline-[lime]
+        outline-[2px] outline-offset-[-2px]
+        md:lg:outline-[0.3rem] md:lg:outline-offset-[-0.3rem]`;
 
         return updateBoard(board);
     }

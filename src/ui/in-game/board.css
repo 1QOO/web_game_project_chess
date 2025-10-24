@@ -1,10 +1,7 @@
 .light-square{background-color: rgb(255, 195, 140);background-size: contain;}
 .dark-square{background-color: rgb(124, 16, 16);background-size: contain;}
 
-.highlight{
-    outline: 0.3rem solid lime;
-    outline-offset: -0.3rem;
-}
+
 
 .board{
     height: calc(100vw - 2rem);
